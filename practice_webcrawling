@@ -1,0 +1,46 @@
+# 필요한 라이브러리 import
+import requests
+from bs4 import BeautifulSoup as bs
+
+# 1번 네이버 증시에서 인기 검색 종목 이름 10개 불러오기
+naver_url = "https://finance.naver.com/sise/lastsearch2.naver"
+naver_raw = requests.get(naver_url,verify=None)
+naver_bs = bs(naver_raw.text,"html.parser")
+count = 0
+
+group_1 = naver_bs.find("div",class_="box_type_l")
+group_2 = group_1.find("table",class_="type_5")
+for i in group_2.find_all("a"):   
+    count +=1
+    print(count, i.text)
+    
+    if count >= 10:
+        break
+
+#멜론차트 - 장르음악 - 장르 클릭해서 나오는 정보 불러오기
+# 장르를 검색하세요 : 발라드
+# 멜론 정보를 갖고 오기 위해서는 request에 header 정보를 입력해줘야함
+user_input = input("장르를 입력해주세요 : ")
+if user_input == "발라드":
+    sn = 1
+if user_input == "댄스":
+    sn = 2
+if user_input == "랩":
+    sn = 3
+if user_input == "R&B":
+    sn = 4
+if user_input == "인디음악":
+    sn = 5
+
+header = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko'}
+melon_url = f"https://www.melon.com/genre/song_list.htm?gnrCode=GN0{sn}00"
+melon_raw = requests.get(melon_url, headers = header)
+melon_bs = bs(melon_raw.text, "html.parser")
+count = 0
+
+for i in melon_bs.find_all("div", class_="ellipsis rank01"):
+    count +=1
+    print(count, i.find("a").text)
+
+    if count >=10:
+        break
